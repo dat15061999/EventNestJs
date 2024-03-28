@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Logger, NotFoundException, Param, Patch, Post, ValidationPipe } from '@nestjs/common';
 import { CreateDTO } from './create-event.dto';
 import { UpdateEventDto } from './update-event.dto';
 import { EntityEvent } from './event.enity';
@@ -7,6 +7,8 @@ import { Repository } from 'typeorm';
 
 @Controller('/events')
 export class ControllerEvent {
+  private readonly logger = new Logger(ControllerEvent.name)
+
   constructor(
     @InjectRepository(EntityEvent)
     private readonly repository: Repository<EntityEvent>
@@ -14,12 +16,24 @@ export class ControllerEvent {
 
 
   @Get()
-  getAll() { return this.repository.find(); };
+  async getAll() {
+    this.logger.log(`Hit the findAll route`)
+    const events = await this.repository.find();
+    this.logger.debug(`Found ${events?.length} events`);
+    return events;
+  };
 
 
   @Get('/:id')
-  getOne(@Param('id') id) {
-    const event = this.repository.findOne({ where: { id: id }, });
+  async getOne(@Param('id') id) {
+    const event = await this.repository.findOne({ where: { id: id }, });
+
+
+    if (!event) {
+      throw new NotFoundException();
+    }
+
+
     return event;
   };
 
