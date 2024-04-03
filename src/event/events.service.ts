@@ -69,7 +69,7 @@ export class EventsService {
     (filter: ListEvents,
       paginateOptions: PaginateOptions) {
     return await paginate(
-      await this.getEventsWithAttendeeCountQuery(),
+      this.getEventsWithAttendeeCountQuery(),
       paginateOptions
     )
   }
@@ -110,7 +110,12 @@ export class EventsService {
     const events = this.getEventsWithAttendeeCountQuery()
       .andWhere('e.id=:id', { id });
     ;
+    console.log(events);
+
     this.logger.debug(events.getSql());
+    if (!events) {
+      throw new NotFoundException();
+    }
     return await events.getOne();
   };
 
