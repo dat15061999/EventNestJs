@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards, Request, Get } from "@nestjs/common";
+import { Controller, Post, UseGuards, Request, Get, UseInterceptors, ClassSerializerInterceptor } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { AuthService } from "./auth.service";
 import { CurrentUser } from "./current-user.decorator";
@@ -25,6 +25,7 @@ export class AuthController {
 
   @Get('profile')
   @UseGuards(AuthGuardJwt)
+  @UseInterceptors(ClassSerializerInterceptor)
   async getProfile(@CurrentUser() user: User) {
     return user;
   }

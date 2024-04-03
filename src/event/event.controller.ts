@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, Injectable, Logger, NotFoundException, Param, Patch, Post, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, ForbiddenException, Get, HttpCode, Injectable, Logger, NotFoundException, Param, Patch, Post, Query, SerializeOptions, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CreateDTO } from './events.create.dto';
 import { UpdateEventDto } from './input/update-event.dto';
 import { EventsService } from './events.service';
@@ -11,6 +11,9 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Controller('/events')
+@SerializeOptions({
+  strategy: 'excludeAll',
+})
 export class ControllerEvent {
 
   constructor(
@@ -32,6 +35,7 @@ export class ControllerEvent {
 
   @Get()
   @UsePipes(new ValidationPipe({ transform: true }))
+  @UseInterceptors(ClassSerializerInterceptor)
   async findAll(@Query() filter: ListEvents) {
     const events = await this.eventsService
       .getEventsWithAttendeeCountFilteredPaginated(
@@ -47,7 +51,10 @@ export class ControllerEvent {
 
 
   @Get('/:id')
+  @UseInterceptors(ClassSerializerInterceptor)
   getOne(@Param('id') id) {
+    console.log(id);
+
     return this.eventsService.getOne(id);
   };
 
