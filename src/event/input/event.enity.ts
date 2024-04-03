@@ -1,6 +1,7 @@
 import { Length } from "class-validator";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { AttendeeEnity } from "../attendee.entity";
+import { User } from "src/auth/user.entity";
 
 
 @Entity("event")
@@ -20,6 +21,14 @@ export class EntityEvent {
   @OneToMany(() => AttendeeEnity, (attendee) => attendee.event, {
     cascade: true,
   })
+
+  @ManyToOne(() => User, (user) => user.organized)
+  @JoinColumn({ name: 'organizedId' })
+  organizer: User
+
+  @Column({ nullable: true })
+  organizedId: number;
+
   attendees: AttendeeEnity[]; //
 
   attendeeCount?: number;
