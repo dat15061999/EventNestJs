@@ -1,4 +1,4 @@
-import { Injectable, Body, Delete, Get, HttpCode, Logger, NotFoundException, Param, Patch, Post, ValidationPipe } from '@nestjs/common';
+import { Injectable, Body, Delete, Get, HttpCode, Logger, NotFoundException, Param, Patch, Post, ValidationPipe, ForbiddenException } from '@nestjs/common';
 import { CreateDTO } from './events.create.dto';
 import { UpdateEventDto } from './input/update-event.dto';
 import { EntityEvent } from './input/event.enity';
@@ -7,9 +7,14 @@ import { Repository, DeleteResult } from 'typeorm';
 import { AttendeeAnswerEnum, AttendeeEnity } from './attendee.entity';
 import { ListEvents } from './input/list.events';
 import { paginate, PaginateOptions } from './../pagination/paginator';
+import { User } from 'src/auth/user.entity';
+import { CurrentUser } from 'src/auth/current-user.decorator';
 
 @Injectable()
 export class EventsService {
+  findOne(arg0: { where: { id: any; }; }) {
+    throw new Error('Method not implemented.');
+  }
   private readonly logger = new Logger(EventsService.name)
 
   constructor(
@@ -105,11 +110,7 @@ export class EventsService {
     const events = this.getEventsWithAttendeeCountQuery()
       .andWhere('e.id=:id', { id });
     ;
-
-
     this.logger.debug(events.getSql());
-
-
     return await events.getOne();
   };
 
@@ -127,18 +128,27 @@ export class EventsService {
   @Patch('/:id')
   async updateEvent(
     @Param('id') id,
-    @Body(new ValidationPipe({ groups: ['update'], transform: true })) input: UpdateEventDto) {
-    const index = await this.eventRepository.findOne({ where: { id: id }, });
+    @Body(new ValidationPipe({ groups: ['update'], transform: true })) input: UpdateEventDto,
+    event: EntityEvent
+  ) {
     return await this.eventRepository.save({
-      ...index,
+      ...event,
       ...input,
     });
   };
 
+  public async createEvent2(input: CreateDTO, user: User): Promise<EntityEvent> {
+    return await this.eventRepository.save({
+      ...input,
+      organizer: user,
+    })
+  }
 
   @Delete('/:id')
   @HttpCode(204)
-  async deleteEvent(id: number): Promise<DeleteResult> {
+  async deleteEvent(
+    id: number
+  ): Promise<DeleteResult> {
     return await this.eventRepository
       .createQueryBuilder('e')
       .delete()
