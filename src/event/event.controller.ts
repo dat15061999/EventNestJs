@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, ForbiddenException, Get, HttpCode, Injectable, Logger, NotFoundException, Param, Patch, Post, Query, SerializeOptions, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, ForbiddenException, Get, HttpCode, Injectable, Logger, NotFoundException, Param, ParseIntPipe, Patch, Post, Query, SerializeOptions, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CreateDTO } from './events.create.dto';
 import { UpdateEventDto } from './input/update-event.dto';
 import { EventsService } from './events.service';
@@ -14,7 +14,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 @SerializeOptions({
   strategy: 'excludeAll',
 })
-export class ControllerEvent {
+export class EventsController {
 
   constructor(
     private readonly eventsService: EventsService,
@@ -36,7 +36,9 @@ export class ControllerEvent {
   @Get()
   @UsePipes(new ValidationPipe({ transform: true }))
   @UseInterceptors(ClassSerializerInterceptor)
-  async findAll(@Query() filter: ListEvents) {
+  async findAll(
+    @Query() filter: ListEvents,
+  ) {
     const events = await this.eventsService
       .getEventsWithAttendeeCountFilteredPaginated(
         filter,
@@ -52,27 +54,27 @@ export class ControllerEvent {
 
   @Get('/:id')
   @UseInterceptors(ClassSerializerInterceptor)
-  getOne(@Param('id') id) {
-    console.log(id);
-
+  getOne(@Param('id', ParseIntPipe) id) {
     return this.eventsService.getOne(id);
   };
 
 
   @Post()
   @UseGuards(AuthGuardJwt)
+  @UseInterceptors(ClassSerializerInterceptor)
   createEvent(
     @Body(new ValidationPipe({ groups: ['create'] })) input: CreateDTO,
     @CurrentUser() user: User
   ) {
-    return this.eventsService.createEvent2(input, user);
+    return this.eventsService.createEvent(input, user);
   };
 
 
   @Patch('/:id')
   @UseGuards(AuthGuardJwt)
+  @UseInterceptors(ClassSerializerInterceptor)
   async updateEvent(
-    @Param('id') id,
+    @Param('id', ParseIntPipe) id,
     @Body(new ValidationPipe({ groups: ['update'], transform: true })) input: UpdateEventDto,
     @CurrentUser() user: User
   ) {
@@ -94,8 +96,10 @@ export class ControllerEvent {
   @Delete('/:id')
   @HttpCode(204)
   @UseGuards(AuthGuardJwt)
+  @UseInterceptors(ClassSerializerInterceptor)
+
   async deleteEvent(
-    @Param('id') id,
+    @Param('id', ParseIntPipe) id,
     @CurrentUser() user: User
   ) {
     const event = await this.eventRepository.findOne({ where: { id: id } });

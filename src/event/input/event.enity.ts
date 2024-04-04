@@ -1,24 +1,25 @@
-import { Length } from "class-validator";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { AttendeeEnity } from "../attendee.entity";
 import { User } from "src/auth/user.entity";
 import { Expose } from "class-transformer";
+import { PaginationResult } from "src/pagination/paginator";
 
 
 @Entity("event")
 export class EntityEvent {
+  constructor(partial?: Partial<EntityEvent>) {
+    Object.assign(this, partial);
+  }
   @PrimaryGeneratedColumn()
   @Expose()
   id: number;
 
   @Column()
   @Expose()
-
   name: string;
 
   @Column()
   @Expose()
-
   address: string;
 
   @Column()
@@ -54,3 +55,5 @@ export class EntityEvent {
   @Expose()
   attendeeAccepted?: number;
 }
+
+export type PaginatedEvents = PaginationResult<EntityEvent>;
