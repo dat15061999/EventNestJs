@@ -2,9 +2,9 @@ import { Body, ClassSerializerInterceptor, Controller, DefaultValuePipe, Get, No
 import { AttendeesService } from "./attendee.service";
 import { EventsService } from "./events.service";
 import { CreateAttendeeDto } from "./input/create-attendee.dto";
-import { CurrentUser } from "src/auth/current-user.decorator";
-import { User } from "src/auth/user.entity";
-import { AuthGuardJwt } from "src/auth/auth-guard.jswt";
+import { CurrentUser } from "./../auth/current-user.decorator";
+import { User } from "./../auth/user.entity";
+import { AuthGuardJwt } from "./../auth/auth-guard.jswt";
 
 @Controller('events-attendance')
 @SerializeOptions({

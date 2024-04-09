@@ -35,8 +35,8 @@ export class UserController {
     user.username = creatUserDto.username;
     user.password = creatUserDto.password;
     user.email = creatUserDto.email;
-    user.firstname = creatUserDto.firstname;
-    user.lastname = creatUserDto.lastname;
+    user.firstname = creatUserDto.firstName;
+    user.lastname = creatUserDto.lastName;
 
     return {
       ...await this.userRepository.save(user),

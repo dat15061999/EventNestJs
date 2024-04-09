@@ -3,12 +3,13 @@ import { CreateDTO } from './events.create.dto';
 import { UpdateEventDto } from './input/update-event.dto';
 import { EventsService } from './events.service';
 import { ListEvents } from './input/list.events';
-import { User } from 'src/auth/user.entity';
-import { CurrentUser } from 'src/auth/current-user.decorator';
-import { AuthGuardJwt } from 'src/auth/auth-guard.jswt';
+import { User } from './../auth/user.entity';
+import { CurrentUser } from './../auth/current-user.decorator';
+import { AuthGuardJwt } from './../auth/auth-guard.jswt';
 import { EntityEvent } from './input/event.enity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import e from 'express';
 
 @Controller('/events')
 @SerializeOptions({
@@ -55,7 +56,7 @@ export class EventsController {
   @Get('/:id')
   @UseInterceptors(ClassSerializerInterceptor)
   getOne(@Param('id', ParseIntPipe) id) {
-    return this.eventsService.getOne(id);
+    return this.eventsService.findOne(id);
   };
 
 
@@ -89,7 +90,7 @@ export class EventsController {
         null, `You are not authorized to update this event`
       )
     }
-    return this.eventsService.updateEvent(id, input, event);
+    return this.eventsService.updateEvent(input, event);
   };
 
 

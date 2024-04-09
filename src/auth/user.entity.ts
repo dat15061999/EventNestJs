@@ -1,10 +1,8 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Profile } from "./profile.entity";
-import { EntityEvent } from "src/event/input/event.enity";
+import { EntityEvent } from "./../event/input/event.enity";
 import { Expose } from "class-transformer";
-import { AttendeeAnswerEnum, AttendeeEnity } from "src/event/attendee.entity";
-
-
+import { AttendeeEnity } from "./../event/attendee.entity";
 
 @Entity()
 export class User {
