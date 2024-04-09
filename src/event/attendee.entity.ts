@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { EntityEvent } from "./input/event.enity";
-import { User } from "src/auth/user.entity";
+import { User } from "./../auth/user.entity";
 import { Expose } from "class-transformer";
 
 export enum AttendeeAnswerEnum {
@@ -8,7 +8,6 @@ export enum AttendeeAnswerEnum {
   Maybe,
   Rejected
 }
-
 
 @Entity({ name: 'attendee' })
 export class AttendeeEnity {

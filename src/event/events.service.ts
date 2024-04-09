@@ -1,13 +1,13 @@
-import { Injectable, Body, Delete, Get, HttpCode, Logger, NotFoundException, Param, Patch, Post, ValidationPipe, ForbiddenException, ParseIntPipe } from '@nestjs/common';
+import { Injectable, Get, Logger, NotFoundException, Param, ParseIntPipe } from '@nestjs/common';
 import { CreateDTO } from './events.create.dto';
 import { UpdateEventDto } from './input/update-event.dto';
 import { EntityEvent, PaginatedEvents } from './input/event.enity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeleteResult, SelectQueryBuilder } from 'typeorm';
-import { AttendeeAnswerEnum, AttendeeEnity } from './attendee.entity';
+import { AttendeeAnswerEnum } from './attendee.entity';
 import { ListEvents } from './input/list.events';
 import { paginate, PaginateOptions } from './../pagination/paginator';
-import { User } from 'src/auth/user.entity';
+import { User } from './../auth/user.entity';
 
 @Injectable()
 export class EventsService {
@@ -17,8 +17,6 @@ export class EventsService {
   constructor(
     @InjectRepository(EntityEvent)
     private readonly eventRepository: Repository<EntityEvent>,
-    @InjectRepository(AttendeeEnity)
-    private readonly attendeeRepository: Repository<AttendeeEnity>,
   ) { }
 
   private getEventsBaseQuery(): SelectQueryBuilder<EntityEvent> {
@@ -73,27 +71,7 @@ export class EventsService {
   }
 
 
-  @Get()
-  async practive2() {
-    // return await this.attendeeRepository.findOne({
-    //   where: { id: 1 },
-    //   relations: ['attendees'],
-    // });
-    // const event = await this.eventRepository.findOne({
-    //   where: { id: 1 },
-    //   relations: ['attendees']
-    // });
-    // const event = new EntityEvent();
-    // event.id = 1;
-
-    // const attendee = new AttendeeEnity();
-    // attendee.name = 'Merry the Second';
-    // attendee.event = event;
-
-    // event.attendees.push(attendee);
-    // await this.attendeeRepository.save(attendee);
-    // await this.eventRepository.save(event);
-
+  public async practive2() {
     return this.eventRepository.createQueryBuilder('e')
       .select(['e.id', 'e.name'])
       .orderBy('e.id', 'ASC')
@@ -103,8 +81,9 @@ export class EventsService {
 
   }
 
-  @Get('/:id')
-  async getOne(@Param('id', ParseIntPipe) id: number) {
+  public getOne(
+    id: number
+  ) {
     const events = this.getEventsWithAttendeeCountQuery()
       .andWhere('e.id=:id', { id });
     ;
@@ -114,12 +93,14 @@ export class EventsService {
     if (!events) {
       throw new NotFoundException();
     }
-    return await events.getOne();
+    return events;
   };
 
+  public async findOne(id: number): Promise<EntityEvent | undefined> {
+    return await this.eventRepository.findOne({ where: { id: id } });
+  }
 
-  @Post()
-  async createEvent(
+  public async createEvent(
     input: CreateDTO,
     user: User
   ): Promise<EntityEvent> {
@@ -133,13 +114,10 @@ export class EventsService {
     )
   }
 
-
-  @Patch('/:id')
-  async updateEvent(
-    @Param('id', ParseIntPipe) id,
-    @Body(new ValidationPipe({ groups: ['update'], transform: true })) input: UpdateEventDto,
+  public async updateEvent(
+    input: UpdateEventDto,
     event: EntityEvent
-  ) {
+  ): Promise<EntityEvent> {
     return await this.eventRepository.save(
       new EntityEvent({
         ...event,
@@ -148,18 +126,15 @@ export class EventsService {
     );
   };
 
-  @Delete('/:id')
-  @HttpCode(204)
-  async deleteEvent(
+  public async deleteEvent(
     id: number
   ): Promise<DeleteResult> {
     return await this.eventRepository
       .createQueryBuilder('e')
       .delete()
-      .where('id=:id', { id })
+      .where('id = :id', { id })
       .execute();
-    ;
-  };
+  }
 
   @Get()
   practive() {

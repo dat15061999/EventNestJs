@@ -1,11 +1,11 @@
 import { registerAs } from "@nestjs/config";
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
-import { Profile } from "src/auth/profile.entity";
-import { User } from "src/auth/user.entity";
-import { AttendeeEnity } from "src/event/attendee.entity";
-import { EntityEvent } from "src/event/input/event.enity";
-import { Teacher } from "src/school/teacher.entity";
-import { Subject } from "src/school/subject.entity";
+import { Profile } from "./../auth/profile.entity";
+import { User } from "./../auth/user.entity";
+import { AttendeeEnity } from "./../event/attendee.entity";
+import { EntityEvent } from "./../event/input/event.enity";
+import { Teacher } from "./../school/teacher.entity";
+import { Subject } from "./../school/subject.entity";
 
 export default registerAs(
   'orm.config',

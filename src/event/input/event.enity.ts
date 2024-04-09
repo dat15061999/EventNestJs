@@ -1,8 +1,8 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { AttendeeEnity } from "../attendee.entity";
-import { User } from "src/auth/user.entity";
+import { User } from "./../../auth/user.entity";
 import { Expose } from "class-transformer";
-import { PaginationResult } from "src/pagination/paginator";
+import { PaginationResult } from "./../../pagination/paginator";
 
 
 @Entity("event")
